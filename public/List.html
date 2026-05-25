@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Customer List</title>
+  <style>
+    table {
+      font-family: "Poppins", sans-serif;
+      border-collapse: collapse;
+      width: 80%;
+      margin: 20px auto;
+      color: #000;
+      font-weight: 600;
+      background-color: aqua;
+    }
+
+    th,
+    td {
+      border: 3px solid #333;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      font-family: "Poppins", sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 2;
+      text-transform: capitalize;
+      background-color: #16ff00;
+    }
+
+    button.action-btn {
+      font-family: "Poppins",sans-serif;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 5px;
+      margin-right: 8px;
+      font-size: 17px;
+      font-weight: 400;
+      color: #ffffff;
+      text-align: center;
+      background-color: red;
+      transition: all 0.5s;
+    }
+
+    button.action-btn:hover {
+      color: yellowgreen;
+    }
+
+    .card-body {
+      font-family: "Poppins", sans-serif;
+      text-align: center;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 5px;
+      display: inline-block;
+      margin-left: 24rem;
+      background-color: #16ff00;
+    }
+
+    .btn {
+      padding: 10px;
+      margin-left: 5px;
+      border: none;
+      font-size: 17px;
+      color: #ffffff;
+      font-weight: 300;
+      border-radius: 5px;
+      background-color: rgb(29, 29, 208);
+    }
+
+    .heading {
+      font-family: "Poppins", sans-serif;
+      text-align: center;
+      padding: 10px;
+      display: inline-block;
+      margin-left: 42rem;
+      border-radius: 5px;
+      background-color: #16ff00;
+    }
+    
+  </style>
+</head>
+
+<body>
+  <div class="row">
+    <div class="col-md-7">
+
+    </div>
+    <div class="col-md-5">
+  <div class="card-body">
+    <input style="padding: 10px; border-radius: 5px; border: none; margin-left: 5px;" 
+           type="text" name="name" placeholder="Enter Your Name" 
+           class="form-control mb-8" autofocus id="inputName" />
+
+    <input type="text" style="padding: 10px; border-radius: 5px; border: none; margin-left: 5px;" 
+           name="address" placeholder="Enter Your Address" 
+           class="form-control mb-2" id="inputAddress" />
+
+    <input type="text" style="padding: 10px; border-radius: 5px; border: none; margin-left: 5px;" 
+           name="phone" placeholder="Enter Your Phone" 
+           class="form-control mb-2" id="inputPhone"  />
+
+    <button type="button" class="btn btn-info" id="btnAdd">Save Customer</button>
+  </div>
+</div>
+     
+  </div>
+
+  <h2 class="heading">Customer List</h2>
+  <table id="customerTable">
+    <thead>
+      <tr>     
+        
+        <th>Id</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Phone</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data rows will be inserted here by JS -->
+    </tbody>
+  </table>
+
+  <script>
+    // Function to fetch and render customer list
+    function loadCustomers() {
+      fetch('/users')
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.querySelector('#customerTable tbody');
+          tbody.innerHTML = ''; // Clear previous rows
+
+          data.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${c.id}</td>
+              <td>${c.name}</td>
+              <td>${c.address}</td>
+              <td>${c.phone}</td>
+              <td>
+                <button class="action-btn edit-btn" title="Edit" data-id="${c.id}">Edit  ✏️</button>
+                <button class="action-btn delete-btn" title="Delete" data-id="${c.id}">Delete  🗑️</button>
+              </td>
+            `;
+            
+            tbody.appendChild(tr);
+          });
+
+          // Attach event listeners for edit buttons
+          document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+              const id = this.dataset.id;
+              const row = this.closest('tr');
+              const currentName = row.children[1].textContent;
+              const currentAddress = row.children[2].textContent;
+              const currentPhone = row.children[3].textContent;
+
+              const newName = prompt('Enter new name:', currentName);
+              if (newName === null) return; // cancel
+
+              const newAddress = prompt('Enter new address:', currentAddress);
+              if (newAddress === null) return;
+
+              const newPhone = prompt('Enter new phone:', currentPhone);
+              if (newPhone === null) return;
+
+              // Send update request
+              fetch('/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id,name: newName, address: newAddress, phone: newPhone })
+              })
+                .then(res => res.text())
+                .then(msg => {
+                  alert(msg);
+                  loadCustomers(); // refresh table
+                })
+                .catch(err => alert('Update failed: ' + err));
+            });
+          });
+
+          // Attach event listeners for delete buttons
+          document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+              const id = this.dataset.id;
+              if (confirm('Are you sure you want to delete this customer?')) {
+                fetch('/delete', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id })
+                })
+                  .then(res => res.text())
+                  .then(msg => {
+                    alert(msg);
+                    loadCustomers(); // refresh table
+                  })
+                  .catch(err => alert('Delete failed: ' + err));
+              }
+            });
+          });
+
+        })
+        .catch(err => {
+          console.error('Error fetching customers:', err);
+        });
+    }
+
+    // Load customers on page load
+    loadCustomers();
+   function add() {
+  const txtname = document.getElementById('inputName').value.trim();
+  const txtaddress = document.getElementById('inputAddress').value.trim();
+  const txtphone = document.getElementById('inputPhone').value.trim();
+
+ 
+  if (!txtname || !txtaddress || !txtphone) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  fetch('/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name :txtname, address:txtaddress, phone:txtphone })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    //alert(msg);
+    // yahan apka table reload function call kar do
+    if (typeof loadCustomers === "function") {
+      loadCustomers();
+    }
+  })
+  .catch(err => alert('Add failed: ' + err));
+}
+document.getElementById('btnAdd').addEventListener('click', add);
+
+  </script>
+</body>
+
+</html>

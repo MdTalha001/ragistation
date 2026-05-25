@@ -1,0 +1,195 @@
+<!-- page2.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Details</title>
+  <style>
+    * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            background-color: aqua;
+            border-radius: 8px;
+        }
+
+        .container h2 {
+            text-align: center;
+            text-transform: capitalize;
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .input-box {
+            margin: 12px 0;
+        }
+
+        label {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            font-size: 17px;
+            font-weight: 500;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #F0F1F8;
+        }
+
+        .input-box input[type="radio"] {
+            margin: 5px;
+            font-size: 20px;
+            
+        }
+        .input-box .gender
+        input[type="radio"] {
+           width: 20px;
+        }
+
+
+        .contact {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn1,
+        .btn2,
+        .btn3 {
+            padding: 8px 12px;
+            background-color: #16ff00;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn1:hover,
+        .btn2:hover,
+        .btn3:hover {
+            font-size: 20px;
+            color: black;
+            box-shadow: 0 0 25px #16ff00;
+        }
+
+        .container .input-box .gender {
+            display: flex;
+            /* justify-content: center; */
+        }
+  </style>
+   <script>
+     alert('hi')
+    const studentData = (localStorage.getItem('UserData'));
+    
+   alert(studentData)
+    if (studentData) {
+       var name= document.getElementById("name");
+       name.value="Test";
+      card.innerHTML = `
+        <h2>Student Details</h2>
+        <p><strong>Name:</strong> ${studentData.name}</p>
+        <p><strong>Roll No:</strong> ${studentData.roll}</p>
+        <p><strong>Address:</strong> ${studentData.address}</p>
+        <p><strong>Gender:</strong> ${studentData.gender}</p>
+        <p><strong>Class:</strong> ${studentData.class}</p>
+        <p><strong>Parent's Name:</strong> ${studentData.parents}</p>
+        
+        <div class="btns">
+          <button class="edit-btn" onclick="editDetails()">Edit</button>
+          <button class="proceed-btn" onclick="proceed()">Proceed</button>
+        </div>
+      `;
+    } else {
+      card.innerHTML = "<p>No student data found. Please register first.</p>";
+    }
+
+    function editDetails() {
+      // Send user back to index.html to edit
+      window.location.href = "index.html?edit=true";
+    }
+
+    function proceed() {
+      alert("Proceeding with the form... (customize this function later)");
+    }
+  </script>
+ </head>
+<body>
+ <div class="container">
+    
+        <h2>Student Form</h2>
+        <form id="studentForm" action="/data" method="POST">
+            <div class="input-box">
+                <label for="name">Name:</label>
+               
+            </div>
+
+            <div class="input-box">
+                <label for="roll">Roll No:</label>
+                <input type="number" id="name" placeholder="Enter Roll No" name="name" value="">
+            </div>
+
+            <div class="input-box">
+                <label for="address">Address:</label>
+                <input type="text" id="address" placeholder="Enter Your Address" required name="address">
+            </div>
+            <div class="input-box">
+                <label>Gender:</label>
+                <div class="gender">
+                    <label for="male">Male</label>
+                    <input type="radio" id="male" name="gender" value="Male">
+                    <label for="female">Female</label>
+                    <input type="radio" id="female" name="gender" value="Female">
+                </div>
+            </div>
+
+            <div class="input-box">
+                <label for="class">Class:</label>
+                <input type="number" id="class" placeholder="Enter Class" required>
+            </div>
+
+            <div class="input-box">
+                <label for="parents">Parent's Name:</label>
+                <input type="text" id="parents" placeholder="Enter Parent's Name" required>
+            </div>
+
+            <div class="contact">
+                <button type="button" class="btn1" id="EditBtn">Edit</button>
+                <button type="submit" class="btn2" id="ProceedBtn">Proceed</button>
+                
+            </div>
+        </form>
+    </div>
+
+      <a href="users"><button>View Users</button></a>
+
+ 
+</body>
+</html>
